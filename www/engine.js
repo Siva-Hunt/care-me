@@ -87,7 +87,10 @@ async function refreshAIState() {
 }
 function friendlyAiError(e) {
   const m = String(e?.message || e || '');
-  if (/app ?check|attestation|integrity|PERMISSION_DENIED|403/i.test(m)) return new Error('Google could not verify this copy of Care Me (App Check). Make sure Google Play services are up to date; if it continues, the app owner needs to check App Check settings in Firebase.');
+  const detail = m ? '\n\nDetails: ' + m.replace(/\s+/g, ' ').slice(0, 260) : '';
+  if (/app ?check|attestation|integrity/i.test(m)) return new Error('Google could not verify this copy of Care Me (App Check). In Firebase → App Check → APIs, Firebase AI Logic must be "Unenforced" for app copies installed outside the Play Store.' + detail);
+  if (/API key|API_KEY|key not valid|blocked/i.test(m)) return new Error('The Care Me Firebase API key is not allowed to use AI Logic. In Firebase → AI Logic → Settings, make sure the Gemini Developer API is enabled.' + detail);
+  if (/PERMISSION_DENIED|403|forbidden/i.test(m)) return new Error('Google refused the AI request.' + detail);
   if (/quota|RESOURCE_EXHAUSTED|429|rate/i.test(m)) return Object.assign(new Error('The free AI limit is busy right now. Please try again in a minute.'), { code: 'rate_limited' });
   if (/network|Unable to resolve host|timeout|UnknownHost|offline/i.test(m)) return new Error('No internet connection. Photo analysis on this phone needs internet.');
   return new Error(m || 'The AI request failed. Please try again.');
@@ -177,4 +180,4 @@ If allergies or doctor's advice conflict, answer avoid. Be practical, not preach
 const planPrompt = (ctx, days) => `You are an expert Indian clinical dietitian. Create a ${days}-day meal plan for this user. USER PROFILE: ${ctx}
 Rules: match daily calories within ±5% and meet protein; respect diet type strictly (Jain: no onion, garlic, root vegetables; vegan: no dairy/honey); never include allergens; follow the doctor's advice; use everyday dishes from their home cuisine with realistic home portions in Indian measures (katori, cup, piece, tsp oil). Vary dishes across days. Slots: Early morning, Breakfast, Mid-morning, Lunch, Evening snack, Dinner.
 Return ONLY compact JSON:
-{"days":[{"day":"Day 1","meals":[{"slot":"Breakfast","time":"8:00 AM","items":[{"name":"Ragi dosa","qty":"2 pieces","kcal":220,"p":6,"c":38,"f":5}],"kcal":number,"p":number}],"total":{"kcal":n,"p":n,"c":n,"f":n}}],"tips":["3–5 short tips specific to their goal and conditions"],"shopping":["8–15 key groceries for the week"]}`;
+{"days":[{"day":"Day 1","meals":[{"slot":"Breakfast","time":"8:00 AM","items":[{"name":"Ragi dosa","kcal":220,"p":6,"c":38,"f":5}],"kcal":number,"p":number}],"total":{"kcal":n,"p":n,"c":n,"f":n}}],"tips":["3–5 short tips specific to their goal and conditions"],"shopping":["8–15 key groceries for the week"]}`;

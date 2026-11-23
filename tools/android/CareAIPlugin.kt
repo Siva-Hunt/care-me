@@ -1,6 +1,7 @@
 package app.careme.ai
 
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.util.Base64
 import android.util.Log
 import com.getcapacitor.JSObject
@@ -42,11 +43,20 @@ class CareAIPlugin : Plugin() {
     override fun load() {
         try {
             if (FirebaseApp.getApps(context).isEmpty()) FirebaseApp.initializeApp(context)
-            FirebaseAppCheck.getInstance().installAppCheckProviderFactory(PlayIntegrityAppCheckProviderFactory.getInstance())
+            // Play Integrity can only vouch for copies installed from Google Play; sideloaded copies skip it
+            // (AI Logic must then be left "Unenforced" in Firebase App Check).
+            if (installer() == "com.android.vending")
+                FirebaseAppCheck.getInstance().installAppCheckProviderFactory(PlayIntegrityAppCheckProviderFactory.getInstance())
         } catch (e: Exception) {
             Log.e(TAG, "Firebase init failed", e)
         }
     }
+
+    private fun installer(): String? = try {
+        val pm = context.packageManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) pm.getInstallSourceInfo(context.packageName).installingPackageName
+        else pm.getInstallerPackageName(context.packageName)
+    } catch (e: Exception) { null }
 
     private fun model(name: String, mode: InferenceMode, json: Boolean, maxTokens: Int) =
         Firebase.ai(backend = GenerativeBackend.googleAI())

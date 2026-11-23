@@ -28,6 +28,7 @@
   </div>
  </div>
  <div class="card insight" id="insight" hidden></div>
+ <div class="card" id="todayWork"></div>
  <div class="card"><h2>Nutrients today</h2><div id="nutri"></div></div>
  <div class="card" id="activity"></div>
  <div class="card">
@@ -98,6 +99,9 @@
  <div id="guides"></div>
 </section>
 
+<!-- WORKOUT -->
+<section class="view" id="v-workout" hidden></section>
+
 <!-- PROGRESS -->
 <section class="view" id="v-progress" hidden>
  <div class="card">
@@ -131,6 +135,7 @@
   <label class="tog"><input type="checkbox" id="remMeals"><span>Meal logging reminders (8:30 am, 1:30 pm, 8:30 pm)</span></label>
   <label class="tog"><input type="checkbox" id="remWater"><span>Water reminders every 2 hours (9 am – 9 pm)</span></label>
   <label class="tog"><input type="checkbox" id="remWeigh"><span>Weekly weigh-in (Monday 7 am)</span></label>
+  <label class="tog"><input type="checkbox" id="remWork"><span>Workout reminder on your workout days (6:30 pm)</span></label>
   <p class="meta" id="remNote"></p>
  </div>
  <form class="card form" id="aiForm">
@@ -159,7 +164,8 @@
 <nav class="tabs" aria-label="Sections">
  <button data-go="today" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 8 8h-8z"/></svg>Today</button>
  <button data-go="scan"><svg viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.5"/></svg>Scan</button>
- <button data-go="plan"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 14h6M9 18h3"/></svg>Plan</button>
+ <button data-go="plan"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 14h6M9 18h3"/></svg>Diet</button>
+ <button data-go="workout"><svg viewBox="0 0 24 24"><path d="M3 10v4M6 8v8M18 8v8M21 10v4M6 12h12"/></svg>Workout</button>
  <button data-go="progress"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 15l4-4 3 3 5-6"/></svg>Progress</button>
  <button data-go="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</button>
 </nav>
@@ -177,11 +183,15 @@
   <div class="row center"><button class="hot" id="share">Share report</button><button class="alt" id="closeSheet">Close</button></div>
  </div>
 </div>
+<div class="player" id="player" hidden></div>
+<div class="sheet exsheet" id="exSheet" hidden><div class="sheetIn" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" role="status"></div>
 <div class="sheet" id="confirm" hidden><div class="sheetIn small"><p id="confirmTxt"></p><div class="row center"><button class="alt danger" id="cYes">Delete</button><button class="alt" id="cNo">Cancel</button></div></div></div>
 
+<script src="fitness-data.js"></script>
 <script src="data.js"></script>
 <script src="engine.js"></script>
+<script src="fitness.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

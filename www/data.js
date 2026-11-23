@@ -64,6 +64,16 @@ const SECTIONS = [
     { k: 'docNote', t: 'area', label: 'Diet advice from your doctor or dietitian', ph: 'e.g. salt under 5 g, no sweets, protein 50 g' },
     { k: 'shareHealth', t: 'toggle', label: 'Use my health details for personalised AI advice', hint: 'Sends your goals and conditions (never your name) with food photos to the AI service you choose.' }
   ] },
+  { id: 'fitness', title: 'Fitness & toning', sub: 'Builds your home-workout course. No gym needed.', fields: [
+    { k: 'fLevel', t: 'cards', label: 'Your fitness level', opts: FIT_LEVELS },
+    { k: 'fGoal', t: 'cards', label: 'Workout goal', opts: FIT_GOALS },
+    { k: 'fAreas', t: 'chips', label: 'Which areas do you want to tone?', opts: AREAS },
+    { row: [{ k: 'fDays', t: 'select', label: 'Workout days a week', opts: [['3', '3 days'], ['4', '4 days'], ['5', '5 days'], ['6', '6 days']] },
+      { k: 'fMins', t: 'select', label: 'Minutes per workout', opts: [['10', '10 min'], ['20', '20 min'], ['30', '30 min'], ['45', '45 min']] }] },
+    { k: 'fEquip', t: 'chips', label: 'What do you have at home? (optional)', opts: EQUIP },
+    { k: 'fLimits', t: 'chips', label: 'Any pain or limits? (optional)', opts: LIMITS },
+    { k: 'fEat', t: 'toggle', label: 'Add half of my workout calories to my food budget' }
+  ] },
   { id: 'food', title: 'Food preferences', sub: 'So suggestions match what you actually eat.', fields: [
     { k: 'diet', t: 'cards', label: 'Diet type', opts: DIETS },
     { k: 'region', t: 'select', label: 'Home cuisine', opts: REGIONS.map(r => [r, r]) },
@@ -73,7 +83,8 @@ const SECTIONS = [
 ];
 
 const DEF_PROFILE = { name: '', age: 30, sex: 'm', h: 170, w: 70, tw: '', act: '1.375', wgoal: 'maintain', pace: 'std', focus: [], conds: [],
-  allergies: '', meds: '', hba1c: '', fbs: '', bps: '', bpd: '', docNote: '', shareHealth: true, diet: 'nonveg', region: REGIONS[0], dislikes: '', waterGoal: 8, targetOverride: '' };
+  allergies: '', meds: '', hba1c: '', fbs: '', bps: '', bpd: '', docNote: '', shareHealth: true, diet: 'nonveg', region: REGIONS[0], dislikes: '', waterGoal: 8, targetOverride: '',
+  fLevel: 'beg', fGoal: 'tone', fAreas: [], fDays: '3', fMins: '20', fEquip: [], fLimits: [], fEat: false };
 
 /* Short, conservative guidance shown on the Plan screen. */
 const GUIDE = {

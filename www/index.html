@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4b223">
+<title>Care Me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="appbar">
+ <h1 id="title">Care Me</h1>
+ <button class="hello" data-go="profile" id="hello" aria-label="Open profile"></button>
+</header>
+
+<main>
+<!-- TODAY -->
+<section class="view" id="v-today">
+ <div class="card hero">
+  <div class="ring" id="ring" role="img" aria-label="Calories today"></div>
+  <div class="heroTxt">
+   <div class="meta" id="goalLbl">Eaten today</div>
+   <div class="bign" id="tEaten">0</div>
+   <div class="meta" id="tLeft"></div>
+   <button class="hot" data-go="scan">Scan a meal</button>
+  </div>
+ </div>
+ <div class="card insight" id="insight" hidden></div>
+ <div class="card"><h2>Nutrients today</h2><div id="nutri"></div></div>
+ <div class="card" id="activity"></div>
+ <div class="card">
+  <div class="split2"><h2>Water</h2><span class="meta" id="waterTxt"></span></div>
+  <div class="water" id="water"></div>
+ </div>
+ <div class="card"><h2>Today's meals</h2><div id="todayMeals"></div></div>
+</section>
+
+<!-- SCAN -->
+<section class="view" id="v-scan" hidden>
+ <div id="camStage">
+  <div class="cam" id="cam">
+   <video id="video" playsinline muted autoplay></video>
+   <img id="shot" alt="Captured meal" hidden>
+   <div class="frame" aria-hidden="true"></div>
+   <div class="camMsg" id="camMsg"></div>
+   <button class="icon torch" id="torch" hidden aria-label="Toggle flash">⚡</button>
+  </div>
+  <div class="camBar" id="camBar">
+   <button class="icon" id="gallery" aria-label="Pick from gallery"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg></button>
+   <button class="shutter" id="snap" aria-label="Take photo"></button>
+   <button class="icon" id="flip" aria-label="Switch camera"><svg viewBox="0 0 24 24"><path d="M4 9a8 8 0 0 1 14-3l2 2M20 15a8 8 0 0 1-14 3l-2-2"/><path d="M20 4v4h-4M4 20v-4h4"/></svg></button>
+  </div>
+  <div class="camBar" id="shotBar" hidden>
+   <button class="alt" id="retake">Retake</button>
+   <button class="hot" id="analyze">Analyse photo</button>
+  </div>
+  <input type="file" id="file" accept="image/*" hidden>
+  <p class="status" id="status" role="status"></p>
+ </div>
+
+ <div class="card bill" id="review" hidden>
+  <div class="split2"><h2>Your plate</h2>
+   <select id="mealType" aria-label="Meal type"><option>Breakfast</option><option>Lunch</option><option>Snacks</option><option>Dinner</option></select></div>
+  <div class="total"><span class="meta">Estimated total</span><span class="n" id="tot">0 kcal</span></div>
+  <div class="fit" id="fit" hidden></div>
+  <div id="items"></div>
+  <div class="tip" id="tip" hidden></div>
+  <div class="add">
+   <input id="addName" placeholder="Add missed dish, e.g. 2 roti" aria-label="Dish name">
+   <input id="addKcal" type="number" inputmode="numeric" min="0" placeholder="kcal" aria-label="Calories (optional)">
+   <button class="alt" id="addBtn">Add</button>
+  </div>
+  <div class="row">
+   <button class="hot grow" id="save">Save to diary</button>
+   <button class="alt grow" id="report">View report</button>
+  </div>
+ </div>
+ <p class="center"><button class="link" id="demo">No camera handy? Load a sample meal</button></p>
+</section>
+
+<!-- PLAN -->
+<section class="view" id="v-plan" hidden>
+ <div class="card">
+  <h2>Can I eat this?</h2>
+  <p class="meta">Ask about any food — the answer considers your goal and health conditions.</p>
+  <div class="add one"><input id="canFood" placeholder="e.g. mango, parotta, filter coffee with sugar"><button class="hot" id="canBtn">Ask</button></div>
+  <div id="canOut"></div>
+ </div>
+ <div class="card">
+  <div class="split2"><h2>My diet plan</h2><span class="meta" id="planMeta"></span></div>
+  <p class="meta" id="planIntro">A meal plan built from your calorie target, goals, health conditions, diet type and home cuisine.</p>
+  <div class="row"><button class="hot grow" id="plan1">Plan for today</button><button class="alt grow" id="plan7">7-day plan</button></div>
+  <p class="status" id="planStatus"></p>
+  <div id="planOut"></div>
+ </div>
+ <div id="guides"></div>
+</section>
+
+<!-- PROGRESS -->
+<section class="view" id="v-progress" hidden>
+ <div class="card">
+  <div class="split2"><h2>Weight</h2><span class="meta" id="wMeta"></span></div>
+  <div class="fig" id="wFig"></div>
+  <div class="add one"><input id="wIn" type="number" inputmode="decimal" step="0.1" placeholder="Today's weight (kg)"><button class="hot" id="wBtn">Log</button></div>
+  <p class="meta" id="wEta"></p>
+ </div>
+ <div class="card" id="readCard">
+  <h2>Health readings</h2>
+  <p class="meta">Log blood sugar and BP. Readings from your glucometer or BP monitor app also appear here once Health Connect is linked.</p>
+  <div class="two">
+   <select id="rType" aria-label="Reading type"><option value="fbs">Sugar – fasting</option><option value="ppbs">Sugar – after meal</option><option value="rbs">Sugar – random</option><option value="bp">Blood pressure</option></select>
+   <input id="rVal" placeholder="mg/dL or 120/80" aria-label="Reading value">
+  </div>
+  <div class="row"><button class="alt grow" id="rBtn">Add reading</button></div>
+  <div id="readList"></div>
+ </div>
+ <div class="card"><h2>This week</h2><div class="stats" id="wkStats"></div><div class="week" id="week"></div><div class="row"><button class="alt grow" id="aiReview">Get AI weekly review</button></div><div id="reviewOut"></div></div>
+ <h2 class="sect">Food diary</h2>
+ <div id="diary"></div>
+</section>
+
+<!-- PROFILE -->
+<section class="view" id="v-profile" hidden>
+ <div class="card" id="targets"></div>
+ <form id="profForm" novalidate></form>
+ <div class="card" id="devices"></div>
+ <div class="card form" id="remCard">
+  <h2>Reminders</h2>
+  <label class="tog"><input type="checkbox" id="remMeals"><span>Meal logging reminders (8:30 am, 1:30 pm, 8:30 pm)</span></label>
+  <label class="tog"><input type="checkbox" id="remWater"><span>Water reminders every 2 hours (9 am – 9 pm)</span></label>
+  <label class="tog"><input type="checkbox" id="remWeigh"><span>Weekly weigh-in (Monday 7 am)</span></label>
+  <p class="meta" id="remNote"></p>
+ </div>
+ <form class="card form" id="aiForm">
+  <h2>AI engine</h2>
+  <p class="meta" id="aiNote"></p>
+  <label>Provider<select id="aiProv"><option value="gemini">Google Gemini (free tier available)</option><option value="claude">Anthropic Claude</option></select></label>
+  <label>API key<input id="aiKey" type="password" autocomplete="off" spellcheck="false"></label>
+  <label>Model<input id="aiModel" spellcheck="false"></label>
+  <div class="row"><button class="hot" type="submit">Save</button><button class="alt" type="button" id="aiTest">Test connection</button></div>
+  <p class="status" id="aiStatus"></p>
+ </form>
+ <div class="card form">
+  <h2>Your data</h2>
+  <p class="meta">Everything is stored only on this phone.</p>
+  <div class="row"><button class="alt" id="export">Share diary as CSV</button><button class="alt" id="redoOnb">Redo setup</button><button class="alt danger" id="wipe">Delete all data</button></div>
+  <p class="meta disclaimer">Care Me gives general nutrition guidance from photos and your inputs. It is not a medical device and does not replace your doctor or dietitian — always follow their advice, especially for diabetes, kidney disease, pregnancy or medicines.</p>
+ </div>
+</section>
+</main>
+
+<nav class="tabs" aria-label="Sections">
+ <button data-go="today" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 8 8h-8z"/></svg>Today</button>
+ <button data-go="scan"><svg viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3.5"/></svg>Scan</button>
+ <button data-go="plan"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 14h6M9 18h3"/></svg>Plan</button>
+ <button data-go="progress"><svg viewBox="0 0 24 24"><path d="M4 19h16M6 15l4-4 3 3 5-6"/></svg>Progress</button>
+ <button data-go="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</button>
+</nav>
+
+<!-- Onboarding -->
+<div class="onb" id="onb" hidden>
+ <div class="onbTop"><div class="dots" id="onbDots"></div><button class="link" id="onbSkip">Skip</button></div>
+ <div class="onbBody" id="onbBody"></div>
+ <div class="onbNav"><button class="alt" id="onbBack">Back</button><button class="hot" id="onbNext">Next</button></div>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+ <div class="sheetIn" role="dialog" aria-modal="true" aria-labelledby="repT">
+  <div id="receipt"></div>
+  <div class="row center"><button class="hot" id="share">Share report</button><button class="alt" id="closeSheet">Close</button></div>
+ </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<div class="sheet" id="confirm" hidden><div class="sheetIn small"><p id="confirmTxt"></p><div class="row center"><button class="alt danger" id="cYes">Delete</button><button class="alt" id="cNo">Cancel</button></div></div></div>
+
+<script src="data.js"></script>
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

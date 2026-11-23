@@ -1,0 +1,22 @@
+{
+  "name": "care-me",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Care Me — photo-based diet and calorie companion for Indian and international food",
+  "scripts": {
+    "android:setup": "npx cap add android && python3 tools/make_icons.py && node tools/patch-android.mjs && npx cap sync android",
+    "sync": "npx cap sync android",
+    "open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.6.2",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/core": "8.6.2",
+    "@capacitor/local-notifications": "8.3.1",
+    "@capacitor/share": "8.0.3",
+    "@capgo/capacitor-health": "8.13.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.6.2"
+  }
+}

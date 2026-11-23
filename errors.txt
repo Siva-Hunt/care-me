@@ -1,0 +1,223 @@
+17:> Configure project :app
+20:> Configure project :capacitor-cordova-android-plugins
+23:> Task :app:preBuild UP-TO-DATE
+24:> Task :app:preDebugBuild UP-TO-DATE
+25:> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+26:> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+27:> Task :capacitor-android:preBuild UP-TO-DATE
+28:> Task :capacitor-android:preDebugBuild UP-TO-DATE
+29:> Task :capacitor-app:preBuild UP-TO-DATE
+30:> Task :capacitor-app:preDebugBuild UP-TO-DATE
+31:> Task :capacitor-cordova-android-plugins:preBuild UP-TO-DATE
+32:> Task :capacitor-cordova-android-plugins:preDebugBuild UP-TO-DATE
+33:> Task :capacitor-app:writeDebugAarMetadata
+34:> Task :capacitor-android:writeDebugAarMetadata
+35:> Task :capacitor-firebase-authentication:preBuild UP-TO-DATE
+36:> Task :capacitor-firebase-authentication:preDebugBuild UP-TO-DATE
+37:> Task :capacitor-cordova-android-plugins:writeDebugAarMetadata
+38:> Task :capacitor-local-notifications:preBuild UP-TO-DATE
+39:> Task :capacitor-local-notifications:preDebugBuild UP-TO-DATE
+40:> Task :capacitor-firebase-authentication:writeDebugAarMetadata
+41:> Task :capacitor-local-notifications:writeDebugAarMetadata
+42:> Task :capacitor-share:preBuild UP-TO-DATE
+43:> Task :capacitor-share:preDebugBuild UP-TO-DATE
+44:> Task :capgo-capacitor-health:preBuild UP-TO-DATE
+45:> Task :capgo-capacitor-health:preDebugBuild UP-TO-DATE
+46:> Task :capacitor-share:writeDebugAarMetadata
+47:> Task :capgo-capacitor-health:writeDebugAarMetadata
+48:> Task :capacitor-android:processDebugNavigationResources
+49:> Task :capacitor-app:processDebugNavigationResources
+50:> Task :app:checkDebugAarMetadata
+51:> Task :capacitor-cordova-android-plugins:processDebugNavigationResources
+52:> Task :capacitor-firebase-authentication:processDebugNavigationResources
+53:> Task :capacitor-local-notifications:processDebugNavigationResources
+54:> Task :capacitor-share:processDebugNavigationResources
+55:> Task :capgo-capacitor-health:processDebugNavigationResources
+56:> Task :app:processDebugNavigationResources
+57:> Task :app:generateDebugResValues
+58:> Task :app:compileDebugNavigationResources
+59:> Task :app:processDebugGoogleServices
+60:> Task :capacitor-android:generateDebugResValues
+61:> Task :capacitor-android:generateDebugResources
+62:> Task :capacitor-android:packageDebugResources
+63:> Task :capacitor-app:generateDebugResValues
+64:> Task :capacitor-app:generateDebugResources
+65:> Task :capacitor-app:packageDebugResources
+66:> Task :capacitor-cordova-android-plugins:generateDebugResValues
+67:> Task :capacitor-cordova-android-plugins:generateDebugResources
+68:> Task :capacitor-cordova-android-plugins:packageDebugResources
+69:> Task :capacitor-firebase-authentication:generateDebugResValues
+70:> Task :capacitor-firebase-authentication:generateDebugResources
+71:> Task :capacitor-firebase-authentication:packageDebugResources
+72:> Task :capacitor-local-notifications:generateDebugResValues
+73:> Task :capacitor-local-notifications:generateDebugResources
+74:> Task :capacitor-local-notifications:packageDebugResources
+75:> Task :capacitor-share:generateDebugResValues
+76:> Task :capacitor-share:generateDebugResources
+77:> Task :capacitor-share:packageDebugResources
+78:> Task :capgo-capacitor-health:generateDebugResValues
+79:> Task :capgo-capacitor-health:generateDebugResources
+80:> Task :capgo-capacitor-health:packageDebugResources
+81:> Task :app:mapDebugSourceSetPaths
+82:> Task :app:generateDebugResources
+83:> Task :app:packageDebugResources
+84:> Task :app:mergeDebugResources
+85:> Task :app:createDebugCompatibleScreenManifests
+86:> Task :app:extractDeepLinksDebug
+87:> Task :capacitor-android:extractDeepLinksDebug
+88:> Task :capacitor-app:extractDeepLinksDebug
+89:> Task :capacitor-cordova-android-plugins:extractDeepLinksDebug
+90:> Task :app:parseDebugLocalResources
+91:> Task :capacitor-firebase-authentication:extractDeepLinksDebug
+92:> Task :capacitor-android:processDebugManifest
+93:> Task :capacitor-app:processDebugManifest
+94:> Task :capacitor-cordova-android-plugins:processDebugManifest
+95:> Task :capacitor-firebase-authentication:processDebugManifest
+96:> Task :capacitor-local-notifications:extractDeepLinksDebug
+97:> Task :capacitor-share:extractDeepLinksDebug
+98:> Task :capacitor-share:processDebugManifest
+99:> Task :capacitor-local-notifications:processDebugManifest
+100:> Task :capgo-capacitor-health:extractDeepLinksDebug
+101:> Task :capgo-capacitor-health:processDebugManifest
+102:> Task :capacitor-android:compileDebugLibraryResources
+103:> Task :capacitor-android:parseDebugLocalResources
+104:> Task :app:processDebugMainManifest
+105:> Task :app:processDebugManifest
+106:> Task :capacitor-app:compileDebugLibraryResources
+107:> Task :app:processDebugManifestForPackage
+108:> Task :capacitor-app:parseDebugLocalResources
+109:> Task :capacitor-cordova-android-plugins:compileDebugLibraryResources
+110:> Task :capacitor-android:generateDebugRFile
+111:> Task :capacitor-firebase-authentication:compileDebugLibraryResources
+112:> Task :capacitor-cordova-android-plugins:parseDebugLocalResources
+113:> Task :capacitor-app:generateDebugRFile
+114:> Task :capacitor-firebase-authentication:parseDebugLocalResources
+115:> Task :capacitor-cordova-android-plugins:generateDebugRFile
+116:> Task :capacitor-local-notifications:compileDebugLibraryResources
+117:> Task :capacitor-firebase-authentication:generateDebugRFile
+118:> Task :capacitor-local-notifications:parseDebugLocalResources
+119:> Task :capacitor-share:compileDebugLibraryResources
+120:> Task :capacitor-local-notifications:generateDebugRFile
+121:> Task :capgo-capacitor-health:compileDebugLibraryResources
+122:> Task :capacitor-share:parseDebugLocalResources
+123:> Task :capgo-capacitor-health:parseDebugLocalResources
+124:> Task :capacitor-share:generateDebugRFile
+125:> Task :capgo-capacitor-health:generateDebugRFile
+126:> Task :capacitor-android:javaPreCompileDebug
+127:> Task :app:processDebugResources
+129:> Task :capacitor-android:compileDebugJavaWithJavac
+133:> Task :capacitor-cordova-android-plugins:javaPreCompileDebug
+134:> Task :capacitor-app:javaPreCompileDebug
+135:> Task :capacitor-firebase-authentication:javaPreCompileDebug
+136:> Task :capacitor-cordova-android-plugins:compileDebugJavaWithJavac NO-SOURCE
+137:> Task :capacitor-local-notifications:checkKotlinGradlePluginConfigurationErrors SKIPPED
+138:> Task :capacitor-cordova-android-plugins:bundleLibCompileToJarDebug
+139:> Task :capacitor-local-notifications:javaPreCompileDebug
+140:> Task :capgo-capacitor-health:checkKotlinGradlePluginConfigurationErrors SKIPPED
+141:> Task :capacitor-share:javaPreCompileDebug
+142:> Task :capgo-capacitor-health:javaPreCompileDebug
+143:> Task :app:javaPreCompileDebug
+144:> Task :capacitor-android:bundleLibCompileToJarDebug
+145:> Task :app:mergeDebugShaders
+146:> Task :capacitor-app:compileDebugJavaWithJavac
+147:> Task :capacitor-app:bundleLibCompileToJarDebug
+149:> Task :capacitor-firebase-authentication:compileDebugJavaWithJavac
+155:> Task :capacitor-firebase-authentication:bundleLibCompileToJarDebug
+156:> Task :capacitor-share:compileDebugJavaWithJavac
+157:> Task :capacitor-share:bundleLibCompileToJarDebug
+158:> Task :app:compileDebugShaders NO-SOURCE
+159:> Task :app:generateDebugAssets UP-TO-DATE
+160:> Task :capacitor-android:mergeDebugShaders
+161:> Task :capacitor-android:compileDebugShaders NO-SOURCE
+162:> Task :capacitor-android:generateDebugAssets UP-TO-DATE
+163:> Task :capacitor-android:mergeDebugAssets
+164:> Task :capacitor-app:mergeDebugShaders
+165:> Task :capacitor-app:compileDebugShaders NO-SOURCE
+166:> Task :capacitor-app:generateDebugAssets UP-TO-DATE
+167:> Task :capacitor-app:mergeDebugAssets
+168:> Task :capacitor-cordova-android-plugins:mergeDebugShaders
+169:> Task :capacitor-cordova-android-plugins:compileDebugShaders NO-SOURCE
+170:> Task :capacitor-cordova-android-plugins:generateDebugAssets UP-TO-DATE
+171:> Task :capacitor-cordova-android-plugins:mergeDebugAssets
+172:> Task :capacitor-firebase-authentication:mergeDebugShaders
+173:> Task :capacitor-firebase-authentication:compileDebugShaders NO-SOURCE
+174:> Task :capacitor-firebase-authentication:generateDebugAssets UP-TO-DATE
+175:> Task :capacitor-firebase-authentication:mergeDebugAssets
+176:> Task :capacitor-local-notifications:mergeDebugShaders
+177:> Task :capacitor-local-notifications:compileDebugShaders NO-SOURCE
+178:> Task :capacitor-local-notifications:generateDebugAssets UP-TO-DATE
+179:> Task :capacitor-local-notifications:mergeDebugAssets
+180:> Task :capacitor-share:mergeDebugShaders
+181:> Task :capacitor-share:compileDebugShaders NO-SOURCE
+182:> Task :capacitor-share:generateDebugAssets UP-TO-DATE
+183:> Task :capacitor-share:mergeDebugAssets
+184:> Task :capgo-capacitor-health:mergeDebugShaders
+185:> Task :capgo-capacitor-health:compileDebugShaders NO-SOURCE
+186:> Task :capgo-capacitor-health:generateDebugAssets UP-TO-DATE
+187:> Task :capgo-capacitor-health:mergeDebugAssets
+188:> Task :app:mergeDebugAssets
+189:> Task :app:compressDebugAssets
+190:> Task :capacitor-firebase-authentication:bundleLibRuntimeToJarDebug
+191:> Task :capacitor-app:bundleLibRuntimeToJarDebug
+192:> Task :capacitor-share:bundleLibRuntimeToJarDebug
+193:> Task :capacitor-android:bundleLibRuntimeToJarDebug
+194:> Task :capacitor-cordova-android-plugins:bundleLibRuntimeToJarDebug
+195:> Task :app:desugarDebugFileDependencies
+196:> Task :capacitor-android:processDebugJavaRes NO-SOURCE
+197:> Task :capacitor-app:processDebugJavaRes NO-SOURCE
+198:> Task :capacitor-cordova-android-plugins:processDebugJavaRes NO-SOURCE
+199:> Task :capacitor-firebase-authentication:processDebugJavaRes NO-SOURCE
+200:> Task :capacitor-share:processDebugJavaRes NO-SOURCE
+201:> Task :capacitor-firebase-authentication:bundleLibRuntimeToDirDebug
+202:> Task :app:checkDebugDuplicateClasses
+203:> Task :capgo-capacitor-health:compileDebugKotlin
+204:> Task :capacitor-local-notifications:compileDebugKotlin
+205:> Task :app:mergeExtDexDebug
+206:> Task :capacitor-local-notifications:compileDebugJavaWithJavac NO-SOURCE
+207:> Task :capgo-capacitor-health:compileDebugJavaWithJavac NO-SOURCE
+208:> Task :capacitor-local-notifications:bundleLibCompileToJarDebug
+209:> Task :capgo-capacitor-health:bundleLibCompileToJarDebug
+210:> Task :capacitor-local-notifications:bundleLibRuntimeToJarDebug
+211:> Task :capgo-capacitor-health:bundleLibRuntimeToJarDebug
+212:> Task :capacitor-local-notifications:processDebugJavaRes
+213:> Task :capgo-capacitor-health:processDebugJavaRes
+214:> Task :capacitor-app:bundleLibRuntimeToDirDebug
+215:> Task :capacitor-local-notifications:bundleLibRuntimeToDirDebug
+216:> Task :capacitor-share:bundleLibRuntimeToDirDebug
+217:> Task :capgo-capacitor-health:bundleLibRuntimeToDirDebug
+218:> Task :capacitor-android:bundleLibRuntimeToDirDebug
+219:> Task :capacitor-cordova-android-plugins:bundleLibRuntimeToDirDebug
+220:> Task :app:mergeDebugJniLibFolders
+221:> Task :capacitor-android:mergeDebugJniLibFolders
+222:> Task :capacitor-android:mergeDebugNativeLibs NO-SOURCE
+223:> Task :capacitor-android:copyDebugJniLibsProjectOnly
+225:> Task :app:compileDebugKotlin FAILED
+226:e: Incompatible classes were found in dependencies. Remove them from the classpath or use '-Xskip-metadata-version-check' to suppress errors
+227:e: file:///home/runner/.gradle/caches/modules-2/files-2.1/com.google.mlkit/genai-schema/1.0.0-alpha2/cb134bd4a49450226ece71a2239702bff6d3bcc/genai-schema-1.0.0-alpha2.jar!/META-INF/java.com.google.android.libraries.mlkit.granules.genai.schema_mlkit_genai_schema.kotlin_module Module was compiled with an incompatible version of Kotlin. The binary version of its metadata is 2.4.0, expected version is 2.2.0.
+228:e: file:///home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.4.0/4e9f4b531dce5c7dee58ed2de9a8b9a763c8dc6c/kotlin-stdlib-2.4.0.jar!/META-INF/kotlin-stdlib-jdk7.kotlin_module Module was compiled with an incompatible version of Kotlin. The binary version of its metadata is 2.4.0, expected version is 2.2.0.
+229:e: file:///home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.4.0/4e9f4b531dce5c7dee58ed2de9a8b9a763c8dc6c/kotlin-stdlib-2.4.0.jar!/META-INF/kotlin-stdlib-jdk8.kotlin_module Module was compiled with an incompatible version of Kotlin. The binary version of its metadata is 2.4.0, expected version is 2.2.0.
+230:e: file:///home/runner/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.4.0/4e9f4b531dce5c7dee58ed2de9a8b9a763c8dc6c/kotlin-stdlib-2.4.0.jar!/META-INF/kotlin-stdlib.kotlin_module Module was compiled with an incompatible version of Kotlin. The binary version of its metadata is 2.4.0, expected version is 2.2.0.
+231:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:36:2 Class 'kotlin.OptIn' was compiled with an incompatible version of Kotlin. The actual metadata version is 2.4.0, but the compiler version 2.2.0 can read versions up to 2.3.0.
+233:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:39:25 Class 'kotlin.coroutines.CoroutineContext' was compiled with an incompatible version of Kotlin. The actual metadata version is 2.4.0, but the compiler version 2.2.0 can read versions up to 2.3.0.
+235:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:39:40 Class 'kotlin.coroutines.CoroutineContext' was compiled with an incompatible version of Kotlin. The actual metadata version is 2.4.0, but the compiler version 2.2.0 can read versions up to 2.3.0.
+237:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:45:13 Class 'kotlin.Unit' was compiled with an incompatible version of Kotlin. The actual metadata version is 2.4.0, but the compiler version 2.2.0 can read versions up to 2.3.0.
+239:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:66:9 Class 'kotlin.coroutines.CoroutineContext' was compiled with an incompatible version of Kotlin. The actual metadata version is 2.4.0, but the compiler version 2.2.0 can read versions up to 2.3.0.
+241:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:78:48 Unresolved reference 'javaClass'.
+242:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:80:13 Class 'kotlin.Unit' was compiled with an incompatible version of Kotlin. The actual metadata version is 2.4.0, but the compiler version 2.2.0 can read versions up to 2.3.0.
+244:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:88:20 Unresolved reference 'isNullOrBlank'.
+245:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:88:39 Class 'kotlin.Unit' was compiled with an incompatible version of Kotlin. The actual metadata version is 2.4.0, but the compiler version 2.2.0 can read versions up to 2.3.0.
+247:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:94:9 Class 'kotlin.coroutines.CoroutineContext' was compiled with an incompatible version of Kotlin. The actual metadata version is 2.4.0, but the compiler version 2.2.0 can read versions up to 2.3.0.
+249:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:96:37 Unresolved reference 'isNullOrEmpty'.
+250:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:96:64 Class 'kotlin.coroutines.CoroutineContext' was compiled with an incompatible version of Kotlin. The actual metadata version is 2.4.0, but the compiler version 2.2.0 can read versions up to 2.3.0.
+252:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:103:26 Argument type mismatch: actual type is 'String?', but 'String' was expected.
+253:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:109:17 Class 'kotlin.Unit' was compiled with an incompatible version of Kotlin. The actual metadata version is 2.4.0, but the compiler version 2.2.0 can read versions up to 2.3.0.
+255:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:112:44 Unresolved reference 'javaClass'.
+256:e: file:///home/runner/work/care-me/care-me/android/app/src/main/java/app/careme/ai/CareAIPlugin.kt:112:68 Unresolved reference 'javaClass'.
+258:> Task :capacitor-app:mergeDebugJniLibFolders
+262:FAILURE: Build failed with an exception.
+264:* What went wrong:
+266:> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+267:   > Compilation error. See log for more details
+270:> Run with --info or --debug option to get more log output.
+271:> Run with --scan to get full insights.
+272:> Get more help at https://help.gradle.org.

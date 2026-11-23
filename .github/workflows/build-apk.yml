@@ -58,8 +58,24 @@ jobs:
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          set -o pipefail
+          ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee ../build.log
           cp app/build/outputs/apk/debug/app-debug.apk ../CareMe-v1.0.${{ github.run_number }}.apk
+
+      - name: Save build log (only when the build fails, so problems can be diagnosed)
+        if: failure()
+        run: |
+          mkdir -p /tmp/logs
+          if [ -f build.log ]; then
+            grep -nE "^e: |error:|ERROR|What went wrong|FAILURE|Could not|> " build.log | head -300 > /tmp/logs/errors.txt || true
+            tail -n 400 build.log > /tmp/logs/build-tail.txt
+          else
+            echo "Build failed before the Gradle step (see Actions log)." > /tmp/logs/errors.txt
+          fi
+          echo "run ${{ github.run_number }} commit ${{ github.sha }}" > /tmp/logs/run.txt
+          cd /tmp/logs && git init -q && git checkout -q -b build-logs && git add .
+          git -c user.name="github-actions[bot]" -c user.email="41898283+github-actions[bot]@users.noreply.github.com" commit -qm "Build log for run ${{ github.run_number }} [skip ci]"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" build-logs
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4

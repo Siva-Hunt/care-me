@@ -10,6 +10,8 @@
  --card:light-dark(#ffffff,#211c16);--line:light-dark(#eadfc9,#3a3228);
  --p:light-dark(#2f6fb3,#7fb2ee);--c:light-dark(#d08a00,#f4b223);--f:light-dark(#c8341f,#ff6b4f);
  --veg:#1e8e3e;--non:#b3261e;--egg:#d08a00;
+ --figNear:light-dark(#1d1a16,#f6efe2);--figFar:light-dark(#b9ab95,#6f6252);
+ --skin:#c98a62;--skinFar:#a86c48;--shirt:#1e8e5a;--shirtFar:#146a42;--shorts:light-dark(#2b2f3a,#4d5568);--shortsFar:light-dark(#1b1e26,#3a4050);--hair:#1f1712;--shoe:#e8e2d6;--shoeFar:#bdb5a6;
  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 [hidden]{display:none!important}
@@ -103,8 +105,8 @@ input,select{font:16px Inter,sans-serif;min-height:46px;padding:0 12px;border:1.
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .calc{margin-top:12px;padding:12px;background:var(--turSoft);border-radius:12px;font-size:15px}
 /* tabs */
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + var(--sb))}
-.tabs button{background:none;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11.5px;font-weight:600;min-height:54px;padding:4px}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;display:grid;grid-template-columns:repeat(6,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + var(--sb))}
+.tabs button{background:none;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;min-height:54px;padding:4px 0}
 .tabs svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
 .tabs button.on{color:var(--chili)}
 /* sheet + receipt */
@@ -230,3 +232,53 @@ ul.plain{margin:6px 0 0;padding-left:18px;font-size:14.5px}
 .gbtn svg{width:20px;height:20px}
 .src{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line);margin-left:6px}
 details summary{cursor:pointer}
+/* ---- Workout ---- */
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line);white-space:nowrap}
+.pill.ok{background:light-dark(#e3f4e7,#14291a);color:var(--veg);box-shadow:none}
+.whero{background:linear-gradient(160deg,var(--card) 60%,var(--turSoft))}
+.wtitle{font-size:30px;margin:6px 0 2px}
+.exrow{display:flex;gap:8px;overflow-x:auto;padding:10px 0 2px;scrollbar-width:none}
+.exmini{flex:none;width:92px;min-height:0;padding:6px;border-radius:14px;background:var(--bg);color:var(--ink);font-size:11.5px;font-weight:600;display:flex;flex-direction:column;gap:2px;line-height:1.2;text-align:center}
+.exmini svg,.libitem svg{width:100%;height:auto;aspect-ratio:200/180}
+.wkgrid{display:grid;gap:6px;margin:10px 0}
+.wkrow{display:flex;gap:6px;align-items:center}
+.wkrow .meta{width:26px}
+.cell{flex:1;min-height:30px;border-radius:8px;background:var(--bg);display:grid;place-items:center;font-size:11px;font-weight:600;color:var(--mute);box-shadow:inset 0 0 0 1px var(--line)}
+.cell.done{background:var(--veg);color:#fff;box-shadow:none}
+.cell.today{box-shadow:inset 0 0 0 2px var(--chili);color:var(--ink)}
+.courses,.quick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+.course,.qcard{background:var(--card);color:var(--ink);text-align:left;border-radius:16px;padding:14px;min-height:0;display:flex;flex-direction:column;gap:4px;font-weight:400;box-shadow:0 1px 0 var(--line),0 6px 18px #0000000a}
+.course b,.qcard b{font-family:"Baloo 2",system-ui,sans-serif;font-size:19px;line-height:1.1}
+.course small,.qcard small{color:var(--mute);font-size:12.5px;line-height:1.35}
+.course.on{box-shadow:inset 0 0 0 2.5px var(--chili)}
+.qcard .row{margin-top:auto;padding-top:6px}
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:12px}
+.libitem{background:var(--bg);color:var(--ink);border-radius:14px;padding:8px;min-height:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;font-weight:400}
+.libitem b{font-size:14px;line-height:1.2}
+.meas{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
+.meas label{font-size:13px;font-weight:600}
+.meas input{margin-top:4px}
+.figbox{background:var(--bg);border-radius:16px;margin:8px 0}
+.figbox svg{display:block;width:100%;max-height:260px}
+.btnlink{display:flex;align-items:center;justify-content:center;min-height:46px;border-radius:12px;background:#c4302b;color:#fff;font-weight:600;text-decoration:none}
+.exsheet{z-index:40}
+ol.plain{margin:6px 0 10px;padding-left:20px;font-size:15px;line-height:1.6}
+/* player */
+.player{position:fixed;inset:0;z-index:35;background:var(--bg);display:flex;flex-direction:column;padding:calc(var(--st) + 10px) 16px calc(var(--sb) + 14px);max-width:640px;margin:auto;overflow:auto}
+.ptop{display:flex;gap:10px;align-items:center}
+.pttl{flex:1}.pttl b{display:block;font-size:15px;margin-bottom:4px}
+.pttl .bar i{background:var(--chili);transition:width .3s}
+.pphase{margin-top:12px;font-weight:700;color:var(--chili);text-align:center;font-size:14px}
+.figbox.big{flex:1;display:flex;align-items:center;justify-content:center;min-height:200px;position:relative}
+.figbox.big svg{position:absolute;inset:0;width:100%;height:100%}
+.pname{text-align:center;font-size:28px;margin-top:4px}
+.pcount{text-align:center;line-height:1}
+.pcount b{font-family:"Baloo 2",system-ui,sans-serif;font-size:72px;font-weight:800;color:var(--chili)}
+.pcount small{display:block;color:var(--mute);font-size:14px}
+.pcue{text-align:center;min-height:44px;margin:8px 0 0;font-size:16px}
+.pnext{text-align:center;color:var(--mute);font-size:14px;min-height:46px}
+.pctl{display:flex;justify-content:center;align-items:center;gap:22px;margin-top:6px}
+.pmain{min-width:160px;min-height:58px;font-size:18px;border-radius:99px}
+.pdone{text-align:center;margin:auto;width:100%}
+.pdone .big{font-size:64px}
+@media(max-width:380px){.tabs button{font-size:10px}.pcount b{font-size:60px}}

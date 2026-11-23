@@ -55,7 +55,7 @@ function handleAiErr(e, statusId) {
   if (e?.code === 'nologin') { setStatus(statusId, e.message, 'err'); toast('Please sign in with Google first'); setTimeout(() => { go('profile'); $('aiForm').scrollIntoView({ behavior: 'smooth' }); }, 900); }
   else setStatus(statusId, errMsg(e), 'err');
 }
-function budget() { const t = T(), ex = S.hc.linked && S.hc.eatBack && S.hc.day === today() ? r0((S.hc.data.active || 0) * 0.5) : 0; return { kcal: t.kcal + ex, ex }; }
+function budget() { const t = T(), ex = (S.hc.linked && S.hc.eatBack && S.hc.day === today() ? r0((S.hc.data.active || 0) * 0.5) : 0) + (S.profile.fEat ? r0((window.FIT?.todayWorkoutKcal() || 0) * 0.5) : 0); return { kcal: t.kcal + ex, ex }; }
 function streak() {
   const days = new Set(S.meals.map(m => dayKey(m.ts))); let n = 0, d = new Date();
   if (!days.has(dayKey(d))) d.setDate(d.getDate() - 1);
@@ -63,7 +63,7 @@ function streak() {
 }
 
 /* ---------- navigation ---------- */
-const TITLES = { today: 'Care Me', scan: 'Scan meal', plan: 'Diet plan', progress: 'Progress', profile: 'Profile' };
+const TITLES = { today: 'Care Me', scan: 'Scan meal', plan: 'Diet plan', workout: 'Workout', progress: 'Progress', profile: 'Profile' };
 let tab = 'today';
 function go(t) {
   tab = t;
@@ -72,12 +72,13 @@ function go(t) {
   $('title').textContent = TITLES[t];
   $('camStage').hidden = t === 'scan' && !!editing;
   if (t === 'scan' && !shotBlob && !editing) startCam(); else stopCam();
-  ({ today: renderToday, scan: renderQuick, plan: renderPlan, progress: renderProgress, profile: renderProfile })[t]();
+  ({ today: renderToday, scan: renderQuick, plan: renderPlan, workout: () => window.FIT?.render(), progress: renderProgress, profile: renderProfile })[t]();
   window.scrollTo(0, 0);
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) go(b.dataset.go); });
 plugin('App')?.addListener('backButton', () => {
   if (!$('confirm').hidden) return $('cNo').click();
+  if (window.FIT?.back()) return;
   if (!$('sheet').hidden) return closeSheet();
   if (!$('onb').hidden) { if (onbStep > 0) return onbMove(-1); return; }
   if (tab !== 'today') return go('today');
@@ -106,6 +107,7 @@ function insights(s, t, b) {
   if (s.k > b.kcal) out.push(['Over your calorie budget', `${fmt(s.k - b.kcal)} kcal over. A 30-minute walk burns about 120–150 kcal.`]);
   if (h >= 17 && n && s.p < t.prot * 0.6) out.push(['Protein is low', `Only ${r0(s.p)} g so far. Add dal, curd, egg, paneer, chicken or sundal to dinner.`]);
   if (h >= 18 && n && s.fib < t.fib * 0.5) out.push(['Add fibre', 'Include a vegetable poriyal, salad or keerai at dinner.']);
+  const tw = window.FIT?.todaySession(p); if (tw?.steps && !window.FIT.doneOn(today()).length && h >= 16) out.push(['Today\'s workout is waiting', `${tw.title} · about ${tw.mins} minutes. Even half of it counts!`]);
   const w = S.water[today()] || 0; if (h >= 15 && w < t.water / 2) out.push(['Drink some water', `${w} of ${t.water} glasses so far.`]);
   const last = S.readings.filter(r => r.type !== 'bp').sort((a, b) => b.ts - a.ts)[0];
   if (last && Date.now() - last.ts < 864e5 && readingHigh(last)) out.push(['Recent sugar reading was high', 'Keep the next meal low in rice/sweets and check with your doctor if it stays high.']);
@@ -123,10 +125,18 @@ function renderToday() {
   $('insight').hidden = !ins.length; $('insight').innerHTML = ins.map(([h, x]) => `<div><b>${esc(h)}</b>${esc(x)}</div>`).join('<hr style="border:0;border-top:1px dashed var(--line);margin:10px 0">');
   $('nutri').innerHTML = bar('Protein', s.p, t.prot, 'var(--p)', 'min') + bar('Carbs', s.c, t.carb, 'var(--c)') + bar('Fat', s.f, t.fat, 'var(--f)') +
     bar('Sugar', s.sug, t.sug, '#b06ab3') + bar('Sodium', s.na, t.na, '#5c8a8a', 'max', 'mg') + bar('Fibre', s.fib, t.fib, 'var(--veg)', 'min');
-  renderActivity(); renderWater(); renderFast();
+  renderActivity(); renderWater(); renderFast(); renderTodayWork();
   const ms = mealsOn(today());
   $('todayMeals').innerHTML = ms.length ? ms.slice().reverse().map(mealRow).join('') : '<p class="empty">Nothing logged yet today. Tap Scan to photograph your meal.</p>';
   maybeSync();
+}
+function renderTodayWork() {
+  const el = $('todayWork'), F = window.FIT; if (!F) { el.hidden = true; return; }
+  const ts = F.todaySession(S.profile), done = F.doneOn(today()), kc = done.reduce((a, h) => a + h.kcal, 0), mn = done.reduce((a, h) => a + h.mins, 0);
+  el.innerHTML = `<div class="split2"><h2>Workout</h2>${done.length ? `<span class="pill ok">✓ ${mn} min · ${kc} kcal</span>` : ''}</div>` +
+    (ts.steps ? `<p class="meta">${done.length ? 'Done for today — great work!' : `Today: <b>${esc(ts.title)}</b> · ≈ ${ts.mins} min · ~${ts.kcal} kcal`}</p><div class="row"><button class="${done.length ? 'alt' : 'hot'} grow" data-go="workout">${done.length ? 'View course' : '▶ Start today\'s workout'}</button></div>`
+      : ts.courseDone ? `<p class="meta">Course complete — pick your next level.</p><div class="row"><button class="alt grow" data-go="workout">Open Workout</button></div>`
+      : `<p class="meta">${done.length ? 'Bonus workout done on a rest day!' : 'Rest day — a walk or 8-minute mobility session keeps you loose.'}</p><div class="row"><button class="alt grow" data-go="workout">Open Workout</button></div>`);
 }
 function renderWater() {
   const goal = T().water, w = S.water[today()] || 0;
@@ -555,7 +565,7 @@ document.addEventListener('click', async e => {
   const wt = S.weights.slice(-6).map(w => `${w.d}: ${w.kg} kg`).join('; '), rd = S.readings.slice(-10).map(r => r.type === 'bp' ? `BP ${r.sys}/${r.dia}` : `${r.type} ${r.val}`).join('; ');
   try {
     const x = await ai(`You are a supportive, practical dietitian. USER PROFILE: ${ctx()}
-Last 7 days of food logs: ${JSON.stringify(data)}. Weights: ${wt || 'none'}. Readings: ${rd || 'none'}. Activity today: ${JSON.stringify(S.hc.data || {})}.
+Last 7 days of food logs: ${JSON.stringify(data)}. Weights: ${wt || 'none'}. Readings: ${rd || 'none'}. Activity today: ${JSON.stringify(S.hc.data || {})}. Home workouts this week: ${window.FIT?.summaryForAI() || 'none'}.
 Review the week against their targets. Return ONLY JSON {"grade":"good|ok|poor","headline":"max 12 words","wins":["2–3 specific things"],"fixes":["2–3 specific, doable changes with Indian food examples"],"focus":"one habit for next week"}. If few days are logged, say so kindly and encourage logging.`);
     S.review = { ...x, at: Date.now() }; save(); $('reviewOut').innerHTML = reviewHTML(S.review);
   } catch (err) { $('reviewOut').innerHTML = `<p class="status err">${esc(err.code === 'nologin' ? err.message : errMsg(err))}</p>`; }
@@ -617,7 +627,7 @@ function renderProfile() {
     f.addEventListener('submit', e => { e.preventDefault(); if (!validBasics(profDraft)) return; S.profile = structuredClone(profDraft); save(); toast('Profile saved — targets updated'); renderProfile(); });
   }
   renderDevices();
-  $('remMeals').checked = S.rem.meals; $('remWater').checked = S.rem.water; $('remWeigh').checked = S.rem.weigh;
+  $('remMeals').checked = S.rem.meals; $('remWater').checked = S.rem.water; $('remWeigh').checked = S.rem.weigh; $('remWork').checked = !!S.rem.work;
   $('remNote').textContent = plugin('LocalNotifications') ? '' : 'Reminders work in the Android app.';
   $('aiProv').value = S.ai.prov; $('aiKey').value = S.ai.key; $('aiModel').value = S.ai.model; $('aiModel').placeholder = MODELS[S.ai.prov] + ' (default)'; $('advKey').open = !!S.ai.key; renderAcct();
 }
@@ -684,18 +694,20 @@ async function applyReminders() {
   const LN = plugin('LocalNotifications'); if (!LN) { toast('Reminders work in the Android app'); return; }
   try {
     const perm = await LN.requestPermissions(); if (perm.display !== 'granted') { toast('Allow notifications for Care Me in Android settings'); S.rem = { meals: false, water: false, weigh: false }; save(); renderProfile(); return; }
-    const ids = [101, 102, 103, ...[9, 11, 13, 15, 17, 19, 21].map(h => 200 + h), 301];
+    const ids = [101, 102, 103, ...[9, 11, 13, 15, 17, 19, 21].map(h => 200 + h), 301, 401, 402, 403, 404, 405, 406];
     await LN.cancel({ notifications: ids.map(id => ({ id })) });
     const n = [];
     if (S.rem.meals) [[101, 8, 30, 'Breakfast'], [102, 13, 30, 'Lunch'], [103, 20, 30, 'Dinner']].forEach(([id, hour, minute, m]) => n.push({ id, title: `Log your ${m.toLowerCase()} 🍽`, body: 'Snap a photo in Care Me — it takes 10 seconds.', schedule: { on: { hour, minute }, allowWhileIdle: true } }));
     if (S.rem.water) [9, 11, 13, 15, 17, 19, 21].forEach(h => n.push({ id: 200 + h, title: 'Water break 💧', body: 'Have a glass of water and tap it in Care Me.', schedule: { on: { hour: h, minute: 0 }, allowWhileIdle: true } }));
     if (S.rem.weigh) n.push({ id: 301, title: 'Weekly weigh-in ⚖️', body: 'Weigh yourself before breakfast and log it in Progress.', schedule: { on: { weekday: 2, hour: 7, minute: 0 }, allowWhileIdle: true } });
+    if (S.rem.work && window.FIT) { const start = new Date((S.fit?.start || today()) + 'T00:00');
+      window.FIT.workoutDays(S.profile).forEach((d, i) => n.push({ id: 401 + i, title: 'Workout time 💪', body: 'Your home workout is ready in Care Me — let\'s go!', schedule: { on: { weekday: (start.getDay() + d) % 7 + 1, hour: 18, minute: 30 }, allowWhileIdle: true } })); }
     if (n.length) await LN.schedule({ notifications: n });
     toast(n.length ? 'Reminders set' : 'Reminders off');
   } catch (e) { toast('Could not set reminders: ' + errMsg(e)); }
 }
-['remMeals', 'remWater', 'remWeigh'].forEach(id => $(id).addEventListener('change', () => { S.rem = { meals: $('remMeals').checked, water: $('remWater').checked, weigh: $('remWeigh').checked }; save(); applyReminders(); }));
-plugin('LocalNotifications')?.addListener('localNotificationActionPerformed', a => { const id = a?.notification?.id; go(id >= 300 ? 'progress' : id >= 200 ? 'today' : 'scan'); });
+['remMeals', 'remWater', 'remWeigh', 'remWork'].forEach(id => $(id).addEventListener('change', () => { S.rem = { meals: $('remMeals').checked, water: $('remWater').checked, weigh: $('remWeigh').checked, work: $('remWork').checked }; save(); applyReminders(); }));
+plugin('LocalNotifications')?.addListener('localNotificationActionPerformed', a => { const id = a?.notification?.id; go(id >= 400 ? 'workout' : id >= 300 ? 'progress' : id >= 200 ? 'today' : 'scan'); });
 
 /* ----- data ----- */
 $('export').addEventListener('click', () => {
@@ -718,9 +730,9 @@ function renderOnb() {
   $('onbBack').style.visibility = onbStep ? 'visible' : 'hidden';
   $('onbNext').textContent = id === 'welcome' ? 'Get started' : id === 'done' ? 'Start using Care Me' : id === 'login' && !S.user && isNative() ? 'Skip for now' : 'Next';
   $('onbSkip').hidden = id === 'welcome' || id === 'done';
-  if (id === 'welcome') body.innerHTML = `<div class="welcome"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="var(--tur)"/><circle cx="60" cy="62" r="38" fill="#fff" stroke="#e1d6be" stroke-width="3"/><circle cx="47" cy="52" r="10" fill="var(--tur)"/><circle cx="73" cy="51" r="9" fill="var(--chili)"/><circle cx="58" cy="75" r="9" fill="#78aa3c"/><path d="M60 30c6-8 16-8 18 0-6 6-12 5-18 0z" fill="#1e8e3e"/></svg>
-    <h2>Welcome to Care Me</h2><p class="meta">Your personal diet companion for Indian and international food.</p>
-    <ul><li>📸 Photo → calories for every dish</li><li>🎯 Targets built for your goal and health</li><li>🥗 Personal diet plans in your home cuisine</li><li>⌚ Works with your smartwatch and scale</li><li>📈 Weight, sugar and BP tracking</li></ul><p class="meta">Setup takes about 2 minutes.</p></div>`;
+  if (id === 'welcome') body.innerHTML = `<div class="welcome"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="58" fill="var(--tur)"/><circle cx="60" cy="60" r="44" fill="none" stroke="var(--chili)" stroke-width="5" stroke-dasharray="210 280" transform="rotate(-90 60 60)" stroke-linecap="round"/><circle cx="60" cy="60" r="37" fill="#fff" stroke="#e1d6be" stroke-width="2"/><ellipse cx="60" cy="49" rx="22" ry="9" fill="#1e8e3e" transform="rotate(-28 60 49)"/><path d="M42 57L76 40" stroke="#12622a" stroke-width="2"/><rect x="40" y="70" width="40" height="5" rx="2.5" fill="#1d1a16"/><rect x="36" y="64" width="6" height="17" rx="2" fill="var(--chili)"/><rect x="78" y="64" width="6" height="17" rx="2" fill="var(--chili)"/><rect x="31" y="67" width="5" height="11" rx="2" fill="var(--chili)"/><rect x="84" y="67" width="5" height="11" rx="2" fill="var(--chili)"/></svg>
+    <h2>Welcome to Care Me</h2><p class="meta">Your personal diet & fitness companion — Indian and international food, home workouts.</p>
+    <ul><li>📸 Photo → calories for every dish</li><li>🎯 Targets built for your goal and health</li><li>🥗 Personal diet plans in your home cuisine</li><li>💪 Home workout courses — beginner to pro</li><li>⌚ Works with your smartwatch and scale</li><li>📈 Weight, sugar, BP and body measurements</li></ul><p class="meta">Setup takes about 2 minutes.</p></div>`;
   else if (id === 'login') body.innerHTML = `<h2>Sign in</h2><p class="meta secSub">Use your Google account to switch on photo analysis, diet plans and food checks. No API key, no payment.</p>
     <div class="card">${S.user ? `<div class="acct">${S.user.photo ? `<img src="${esc(S.user.photo)}" alt="">` : `<span class="av">${esc((S.user.name || '?')[0])}</span>`}<div><b>✓ Signed in</b><div class="meta">${esc(S.user.email)}</div></div></div>` : googleBtn('oSignIn')}
      <p class="meta" style="margin-top:12px">On phones with built-in AI (Gemini Nano), food checks run privately on the phone. Other phones use Google Gemini in the cloud. Your diary, weight and health details stay on this phone.</p></div>
@@ -746,6 +758,9 @@ function onbMove(d) {
 $('onbNext').addEventListener('click', () => onbMove(1));
 $('onbBack').addEventListener('click', () => onbMove(-1));
 $('onbSkip').addEventListener('click', () => { onbStep = ONB.length - 1; renderOnb(); });
+
+/* ---------- bridge for fitness.js ---------- */
+window.CM = { get S() { return S; }, save, toast, go, T, esc, fmt, today, dayKey, plugin, ask, shareText, stopCam, get tab() { return tab; } };
 
 /* ================= START ================= */
 go('today');

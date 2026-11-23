@@ -2,7 +2,7 @@
 // Run after `npx cap add android` (the GitHub workflow does this automatically).
 import fs from 'node:fs';
 
-const KOTLIN = '2.2.20'; // same version the Health Connect plugin is built with
+const KOTLIN = '2.3.0'; // Google AI libraries ship Kotlin 2.4 metadata; a 2.3 compiler can read it
 
 const edit = (file, fn) => { const before = fs.readFileSync(file, 'utf8'); const after = fn(before); if (after === before) console.warn('  (no change) ' + file); fs.writeFileSync(file, after); };
 const must = (s, find) => { if (!s.includes(find)) throw new Error('Expected text not found: ' + find.slice(0, 60)); return s; };
@@ -50,8 +50,7 @@ edit('android/app/build.gradle', s => {
   if (s.includes('org.jetbrains.kotlin.android')) return s;
   must(s, "apply plugin: 'com.android.application'"); must(s, 'dependencies {');
   return s
-    .replace("apply plugin: 'com.android.application'", "apply plugin: 'com.android.application'\napply plugin: 'org.jetbrains.kotlin.android'")
-    .replace('buildTypes {', `kotlinOptions { jvmTarget = '21' }\n    buildTypes {`)
+    .replace("apply plugin: 'com.android.application'", "apply plugin: 'com.android.application'\napply plugin: 'org.jetbrains.kotlin.android'\nkotlin { jvmToolchain(21) }")
     .replace('dependencies {', `dependencies {
     // Care Me AI: Firebase AI Logic (cloud Gemini) + on-device Gemini Nano + App Check (Play Integrity)
     implementation platform('com.google.firebase:firebase-bom:35.0.2')

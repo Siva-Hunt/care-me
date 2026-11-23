@@ -2,8 +2,18 @@
   "appId": "in.sivashankaran.careme",
   "appName": "Care Me",
   "webDir": "www",
-  "android": { "allowMixedContent": false },
+  "android": {
+    "allowMixedContent": false
+  },
   "plugins": {
-    "LocalNotifications": { "iconColor": "#C8341F" }
+    "LocalNotifications": {
+      "iconColor": "#C8341F"
+    },
+    "FirebaseAuthentication": {
+      "skipNativeAuth": false,
+      "providers": [
+        "google.com"
+      ]
+    }
   }
 }

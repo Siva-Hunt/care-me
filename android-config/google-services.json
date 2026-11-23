@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "411620546222",
+    "project_id": "care-me-cbd48",
+    "storage_bucket": "care-me-cbd48.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:411620546222:android:2e959854e390aea75e3f3f",
+        "android_client_info": {
+          "package_name": "in.sivashankaran.careme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "411620546222-0hfk5td22k18cl4i5ec5n4o4i7evdivb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.sivashankaran.careme",
+            "certificate_hash": "9cd660ad07873fe3c530cfa66002a6226f1acd9f"
+          }
+        },
+        {
+          "client_id": "411620546222-8d2dpvleqfahj57u77vlj0llp53k3cmc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0YexRMk-uYbp9PF2-vl-smr8KxOXD5CA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "411620546222-8d2dpvleqfahj57u77vlj0llp53k3cmc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

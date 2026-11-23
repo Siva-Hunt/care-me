@@ -223,3 +223,10 @@ ul.plain{margin:6px 0 0;padding-left:18px;font-size:14.5px}
 .welcome svg{width:150px;height:150px}
 .welcome ul{text-align:left;max-width:380px;margin:18px auto;padding-left:20px;line-height:1.9}
 @media(max-width:400px){.tgrid,.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.cards{grid-template-columns:1fr 1fr}}
+.acct{display:flex;gap:12px;align-items:center;margin:6px 0 4px}
+.acct img,.acct .av{width:46px;height:46px;border-radius:50%;object-fit:cover;background:var(--tur);color:#1d1a16;display:grid;place-items:center;font-weight:700;font-size:20px;flex:none}
+.acct div{flex:1}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#1f1f1f;box-shadow:inset 0 0 0 1.5px #dadce0;width:100%}
+.gbtn svg{width:20px;height:20px}
+.src{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line);margin-left:6px}
+details summary{cursor:pointer}

@@ -1,4 +1,4 @@
-/* Food Care — diet engine: daily targets from profile, AI calls, prompts. */
+/* Care Me — diet engine: daily targets from profile, AI calls, prompts. */
 
 const has = (p, ...ids) => ids.some(i => (p.conds || []).includes(i) || (p.focus || []).includes(i));
 
@@ -72,11 +72,50 @@ function parseJSON(t) {
 }
 const blobToB64 = b => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(b); });
 
+/* AI routing:
+   1. Your own API key (Profile → Advanced), if you set one.
+   2. Android app, signed in: Gemini Nano on the phone for short tasks when available, else Gemini in the cloud
+      through the Care Me Firebase project (no key needed).
+   3. claude.ai web preview: Claude's built-in analysis. */
+const CareAI = () => window.Capacitor?.Plugins?.CareAI;
+const isNative = () => !!window.Capacitor?.isNativePlatform?.();
+const AI_STATE = { onDevice: 'UNKNOWN', lastSource: '' };
+async function refreshAIState() {
+  if (!isNative() || !CareAI()) return AI_STATE;
+  try { const r = await CareAI().status(); AI_STATE.onDevice = r.onDevice || 'UNAVAILABLE'; } catch (e) { AI_STATE.onDevice = 'UNAVAILABLE'; }
+  document.dispatchEvent(new Event('ai-ready')); return AI_STATE;
+}
+function friendlyAiError(e) {
+  const m = String(e?.message || e || '');
+  if (/app ?check|attestation|integrity|PERMISSION_DENIED|403/i.test(m)) return new Error('Google could not verify this copy of Care Me (App Check). Make sure Google Play services are up to date; if it continues, the app owner needs to check App Check settings in Firebase.');
+  if (/quota|RESOURCE_EXHAUSTED|429|rate/i.test(m)) return Object.assign(new Error('The free AI limit is busy right now. Please try again in a minute.'), { code: 'rate_limited' });
+  if (/network|Unable to resolve host|timeout|UnknownHost|offline/i.test(m)) return new Error('No internet connection. Photo analysis on this phone needs internet.');
+  return new Error(m || 'The AI request failed. Please try again.');
+}
+
 async function aiCall(cfg, prompt, blob, big) {
   const { prov, key } = cfg, model = cfg.model || MODELS[prov];
+  if (!key && isNative() && CareAI()) {
+    if (!cfg.signedIn) throw Object.assign(new Error('Sign in with Google (Profile → Account & AI) to use the AI features.'), { code: 'nologin' });
+    const image = blob ? await blobToB64(blob) : undefined;
+    let lastErr;
+    if (!big && cfg.deviceAI !== false && AI_STATE.onDevice === 'AVAILABLE') {
+      try {
+        const r = await CareAI().generate({ prompt, image, mode: 'device', json: true, maxTokens: 1024 });
+        const j = parseJSON(r.text); AI_STATE.lastSource = 'device'; return Object.assign(j, { __source: 'device' });
+      } catch (e) { lastErr = e; }
+    }
+    for (const m of [cfg.cloudModel || 'gemini-3.5-flash', 'gemini-flash-latest']) {
+      try {
+        const r = await CareAI().generate({ prompt, image, mode: 'cloud', json: true, maxTokens: big ? 12000 : 3000, model: m });
+        const j = parseJSON(r.text); AI_STATE.lastSource = r.source || 'cloud'; return Object.assign(j, { __source: AI_STATE.lastSource });
+      } catch (e) { lastErr = e; if (!/not found|404|not supported|unsupported|invalid model/i.test(e?.message || '')) break; }
+    }
+    throw friendlyAiError(lastErr);
+  }
   if (!key) {
     if (sampleCap) return sampleCap.json(prompt, blob ? { images: [blob], modelTier: 'default' } : { modelTier: big ? 'default' : 'quick' });
-    throw Object.assign(new Error('Add your AI key in Profile → AI engine first.'), { code: 'nokey' });
+    throw Object.assign(new Error('Photo analysis works in the Care Me Android app after you sign in with Google.'), { code: 'nologin' });
   }
   const b64 = blob ? await blobToB64(blob) : null;
   let r, j;

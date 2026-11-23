@@ -134,13 +134,18 @@
   <p class="meta" id="remNote"></p>
  </div>
  <form class="card form" id="aiForm">
-  <h2>AI engine</h2>
+  <h2>Account &amp; AI</h2>
+  <div id="acct"></div>
   <p class="meta" id="aiNote"></p>
-  <label>Provider<select id="aiProv"><option value="gemini">Google Gemini (free tier available)</option><option value="claude">Anthropic Claude</option></select></label>
-  <label>API key<input id="aiKey" type="password" autocomplete="off" spellcheck="false"></label>
-  <label>Model<input id="aiModel" spellcheck="false"></label>
-  <div class="row"><button class="hot" type="submit">Save</button><button class="alt" type="button" id="aiTest">Test connection</button></div>
+  <div class="row"><button class="alt grow" type="button" id="aiTest">Test AI</button></div>
   <p class="status" id="aiStatus"></p>
+  <details id="advKey"><summary class="grp">Advanced: use your own API key instead</summary>
+   <p class="meta">Only needed on phones without Google Play services. Leave the key empty to use your Google account.</p>
+   <label>Provider<select id="aiProv"><option value="gemini">Google Gemini</option><option value="claude">Anthropic Claude</option></select></label>
+   <label>API key<input id="aiKey" type="password" autocomplete="off" spellcheck="false"></label>
+   <label>Model<input id="aiModel" spellcheck="false"></label>
+   <div class="row"><button class="hot" type="submit">Save key settings</button></div>
+  </details>
  </form>
  <div class="card form">
   <h2>Your data</h2>

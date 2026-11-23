@@ -31,7 +31,7 @@ load();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast('Phone storage is full — delete some old meals'); } };
 const T = () => computeTargets(S.profile);
 const ctx = () => userContext(S.profile, T());
-const ai = (prompt, blob, big) => aiCall(S.ai, prompt, blob, big);
+const ai = (prompt, blob, big) => aiCall({ ...S.ai, signedIn: !!S.user }, prompt, blob, big);
 
 /* ---------- small helpers ---------- */
 let toastT;
@@ -52,7 +52,7 @@ const dayTotals = k => sumOf(mealsOn(k).flatMap(m => m.items));
 const mealType = (d = new Date()) => { const h = d.getHours(); return h < 11 ? 'Breakfast' : h < 16 ? 'Lunch' : h < 19 ? 'Snacks' : 'Dinner'; };
 const errMsg = e => e?.code === 'rate_limited' ? 'Too many requests — wait a minute and try again.' : (e?.message || 'Something went wrong');
 function handleAiErr(e, statusId) {
-  if (e?.code === 'nokey') { setStatus(statusId, e.message, 'err'); toast('Set up the AI engine first'); setTimeout(() => { go('profile'); $('aiForm').scrollIntoView({ behavior: 'smooth' }); }, 900); }
+  if (e?.code === 'nologin') { setStatus(statusId, e.message, 'err'); toast('Please sign in with Google first'); setTimeout(() => { go('profile'); $('aiForm').scrollIntoView({ behavior: 'smooth' }); }, 900); }
   else setStatus(statusId, errMsg(e), 'err');
 }
 function budget() { const t = T(), ex = S.hc.linked && S.hc.eatBack && S.hc.day === today() ? r0((S.hc.data.active || 0) * 0.5) : 0; return { kcal: t.kcal + ex, ex }; }
@@ -114,7 +114,7 @@ function insights(s, t, b) {
 }
 function renderToday() {
   const t = T(), b = budget(), s = dayTotals(today()), p = S.profile;
-  $('hello').textContent = p.name ? p.name.split(' ')[0] : 'Set up';
+  $('hello').textContent = (p.name || S.user?.name || '').split(' ')[0] || (S.user ? 'Profile' : 'Sign in');
   $('ring').innerHTML = ring(s.k, b.kcal);
   $('tEaten').textContent = fmt(s.k);
   $('goalLbl').textContent = labelOf(WGOALS, p.wgoal) + (streak() ? ` · 🔥 ${streak()}-day streak` : '');
@@ -348,7 +348,7 @@ $('analyze').addEventListener('click', async () => {
     items = (Array.isArray(out?.items) ? out.items : []).map(clean);
     meta = { score: Math.max(1, Math.min(10, r0(+out?.score || 0))) || null, verdict: String(out?.verdict || '').slice(0, 160), tip: String(out?.tip || '').slice(0, 240) };
     $('mealType').value = mealType(); renderBill();
-    if (items.length) { setStatus('status', `Found ${items.length} item${items.length > 1 ? 's' : ''}. Adjust quantities to what you actually ate.${out.note ? ' ' + out.note : ''}`); $('review').scrollIntoView({ behavior: 'smooth' }); }
+    if (items.length) { setStatus('status', `Found ${items.length} item${items.length > 1 ? 's' : ''}${out.__source === 'device' ? ' (analysed on your phone)' : out.__source === 'cloud' ? ' (analysed by Google Gemini)' : ''}. Adjust quantities to what you actually ate.${out.note ? ' ' + out.note : ''}`); $('review').scrollIntoView({ behavior: 'smooth' }); }
     else setStatus('status', out?.note || 'No food recognised — try a clearer, top-down photo in good light.', 'err');
   } catch (e) { handleAiErr(e, 'status'); }
   finally { busy = false; $('analyze').disabled = false; }
@@ -360,7 +360,7 @@ async function addDish() {
   else {
     $('addBtn').disabled = true; setStatus('status', 'Looking up ' + name + '…', 'busy');
     try { items.push(clean(await ai(lookupPrompt(ctx(), name)))); setStatus('status', ''); }
-    catch (e) { setStatus('status', e.code === 'nokey' ? 'Enter the calories yourself, or set up the AI engine in Profile.' : 'Could not look that up — enter the calories yourself.', 'err'); $('addBtn').disabled = false; return; }
+    catch (e) { setStatus('status', e.code === 'nologin' ? 'Enter the calories yourself, or sign in with Google in Profile.' : 'Could not look that up — enter the calories yourself.', 'err'); $('addBtn').disabled = false; return; }
     $('addBtn').disabled = false;
   }
   $('addName').value = ''; $('addKcal').value = ''; renderBill();
@@ -474,7 +474,7 @@ async function canEat() {
   try {
     const x = await ai(checkPrompt(ctx(), f)); const a = ['yes', 'limit', 'avoid'].includes(x.answer) ? x.answer : 'limit';
     $('canOut').innerHTML = `<div class="verdict v-${a}"><b>${a === 'yes' ? '✓ Yes' : a === 'limit' ? '≈ In moderation' : '✕ Better to avoid'} — ${esc(x.headline || f)}</b><p>${esc(x.why || '')}</p>${x.portion ? `<p><b style="font-size:15px;display:inline">Portion:</b> ${esc(x.portion)}</p>` : ''}${x.better ? `<p><b style="font-size:15px;display:inline">Better:</b> ${esc(x.better)}</p>` : ''}</div>`;
-  } catch (e) { $('canOut').innerHTML = `<p class="status err">${esc(e.code === 'nokey' ? e.message : errMsg(e))}</p>`; }
+  } catch (e) { $('canOut').innerHTML = `<p class="status err">${esc(e.code === 'nologin' ? e.message : errMsg(e))}</p>`; }
   $('canBtn').disabled = false;
 }
 $('canBtn').addEventListener('click', canEat);
@@ -558,7 +558,7 @@ document.addEventListener('click', async e => {
 Last 7 days of food logs: ${JSON.stringify(data)}. Weights: ${wt || 'none'}. Readings: ${rd || 'none'}. Activity today: ${JSON.stringify(S.hc.data || {})}.
 Review the week against their targets. Return ONLY JSON {"grade":"good|ok|poor","headline":"max 12 words","wins":["2–3 specific things"],"fixes":["2–3 specific, doable changes with Indian food examples"],"focus":"one habit for next week"}. If few days are logged, say so kindly and encourage logging.`);
     S.review = { ...x, at: Date.now() }; save(); $('reviewOut').innerHTML = reviewHTML(S.review);
-  } catch (err) { $('reviewOut').innerHTML = `<p class="status err">${esc(err.code === 'nokey' ? err.message : errMsg(err))}</p>`; }
+  } catch (err) { $('reviewOut').innerHTML = `<p class="status err">${esc(err.code === 'nologin' ? err.message : errMsg(err))}</p>`; }
   btn.disabled = false; btn.textContent = 'Get AI weekly review';
 });
 
@@ -619,20 +619,64 @@ function renderProfile() {
   renderDevices();
   $('remMeals').checked = S.rem.meals; $('remWater').checked = S.rem.water; $('remWeigh').checked = S.rem.weigh;
   $('remNote').textContent = plugin('LocalNotifications') ? '' : 'Reminders work in the Android app.';
-  $('aiProv').value = S.ai.prov; $('aiKey').value = S.ai.key; $('aiModel').value = S.ai.model; $('aiModel').placeholder = MODELS[S.ai.prov] + ' (default)'; renderAiNote();
+  $('aiProv').value = S.ai.prov; $('aiKey').value = S.ai.key; $('aiModel').value = S.ai.model; $('aiModel').placeholder = MODELS[S.ai.prov] + ' (default)'; $('advKey').open = !!S.ai.key; renderAcct();
 }
 function validBasics(p) {
   const bad = [[+p.age >= 12 && +p.age <= 100, 'age (12–100)'], [+p.h >= 120 && +p.h <= 230, 'height in cm'], [+p.w >= 30 && +p.w <= 250, 'weight in kg']].find(x => !x[0]);
   if (bad) { toast('Please enter a valid ' + bad[1]); return false; } return true;
 }
-function renderAiNote() { $('aiNote').textContent = (sampleCap && !S.ai.key ? 'Preview mode: Claude analyses photos for you here. In the Android app, add your own key. ' : '') +
-  'Food photos and (if allowed) your goals and conditions are sent to the AI provider you choose. Your name is never sent. The key stays on this phone.'; }
+/* ----- account (Google sign-in) & AI ----- */
+const Auth = () => plugin('FirebaseAuthentication');
+const G_ICON = '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6C12.4 13.7 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.5 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.8-6A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.7l7.9-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.2-13.5-10l-7.9 6C6.6 42.6 14.6 48 24 48z"/></svg>';
+async function signIn() {
+  const A = Auth(); if (!A) { toast('Google sign-in works in the Care Me Android app'); return false; }
+  try {
+    const r = await A.signInWithGoogle(); const u = r.user || {};
+    S.user = { uid: u.uid, name: u.displayName || '', email: u.email || '', photo: u.photoUrl || '' };
+    if (!S.profile.name && S.user.name) S.profile.name = S.user.name;
+    if (onbDraft && !onbDraft.name && S.user.name) onbDraft.name = S.user.name;
+    save(); toast('Signed in as ' + (S.user.name || S.user.email)); refreshAIState(); return true;
+  } catch (e) { if (!/cancel/i.test(e?.message || '')) toast('Sign-in failed: ' + (e?.message || 'please try again')); return false; }
+}
+async function signOut() { try { await Auth()?.signOut(); } catch (e) {} S.user = null; save(); toast('Signed out'); renderProfile(); }
+async function syncUser() {
+  const A = Auth(); if (!A) return;
+  try { const r = await A.getCurrentUser(); const u = r.user;
+    S.user = u ? { uid: u.uid, name: u.displayName || '', email: u.email || '', photo: u.photoUrl || '' } : null; save();
+    if (tab === 'profile') renderAcct(); if (tab === 'today') renderToday(); } catch (e) {}
+}
+const googleBtn = id => `<button class="gbtn" type="button" id="${id}">${G_ICON}Sign in with Google</button>`;
+function aiStateText() {
+  if (S.ai.key) return `Using your own ${S.ai.prov === 'claude' ? 'Claude' : 'Gemini'} API key (Advanced).`;
+  if (!isNative()) return sampleCap ? 'Web preview: Claude analyses photos here. In the Android app, analysis uses your Google account.' : 'Photo analysis works in the Android app.';
+  if (!S.user) return 'Sign in to switch on photo analysis, diet plans and food checks.';
+  return { AVAILABLE: '✓ This phone has built-in AI (Gemini Nano): quick checks run privately on the phone; bigger tasks use Google Gemini.',
+    DOWNLOADABLE: 'Your phone supports built-in AI; Android will download it in the background. Until then Google Gemini (cloud) is used.',
+    DOWNLOADING: 'Built-in AI is downloading on your phone. Google Gemini (cloud) is used meanwhile.',
+    UNAVAILABLE: '✓ Ready. Your phone doesn\'t have built-in AI, so Care Me uses Google Gemini in the cloud — works on every phone.',
+    UNKNOWN: 'Checking this phone\'s AI…' }[AI_STATE.onDevice] || '';
+}
+function renderAcct() {
+  const u = S.user;
+  $('acct').innerHTML = u ? `<div class="acct">${u.photo ? `<img src="${esc(u.photo)}" alt="">` : `<span class="av">${esc((u.name || u.email || '?')[0].toUpperCase())}</span>`}
+      <div><b>${esc(u.name || 'Signed in')}</b><div class="meta">${esc(u.email)}</div></div><button class="alt" type="button" id="signOutBtn">Sign out</button></div>
+      <label class="tog"><input type="checkbox" id="devAI" ${S.ai.deviceAI !== false ? 'checked' : ''}><span>Use this phone's built-in AI when available (private, works offline)</span></label>`
+    : `<p class="meta">Sign in with your Google account — no API key needed. Your diary stays on this phone.</p><div class="row">${googleBtn('signInBtn')}</div>`;
+  renderAiNote();
+}
+function renderAiNote() { $('aiNote').textContent = aiStateText() + ' Food photos and (if allowed) your goals and conditions are sent to Google\'s Gemini only when the cloud is used. Your name is never sent.'; }
 document.addEventListener('ai-ready', () => { if (tab === 'profile') renderAiNote(); });
+document.addEventListener('click', async e => {
+  const id = e.target.closest('button')?.id;
+  if (id === 'signInBtn' || id === 'oSignIn') { if (await signIn()) { if (tab === 'profile') renderProfile(); if (!$('onb').hidden) renderOnb(); } }
+  if (id === 'signOutBtn') signOut();
+});
+document.addEventListener('change', e => { if (e.target.id === 'devAI') { S.ai.deviceAI = e.target.checked; save(); } });
 $('aiProv').addEventListener('change', () => { $('aiModel').placeholder = MODELS[$('aiProv').value] + ' (default)'; });
-const readAi = () => { S.ai = { prov: $('aiProv').value, key: $('aiKey').value.trim(), model: $('aiModel').value.trim() }; };
-$('aiForm').addEventListener('submit', e => { e.preventDefault(); readAi(); save(); renderAiNote(); toast('AI settings saved'); });
+const readAi = () => { S.ai = { ...S.ai, prov: $('aiProv').value, key: $('aiKey').value.trim(), model: $('aiModel').value.trim() }; };
+$('aiForm').addEventListener('submit', e => { e.preventDefault(); readAi(); save(); renderAiNote(); toast(S.ai.key ? 'Own API key saved' : 'Using your Google account for AI'); });
 $('aiTest').addEventListener('click', async () => { readAi(); save(); setStatus('aiStatus', 'Testing…', 'busy');
-  try { const x = await ai('Return ONLY JSON {"ok":true,"dish":"name one healthy Tamil Nadu breakfast"}'); setStatus('aiStatus', '✓ Connected. ' + (x.dish ? 'Sample answer: ' + x.dish : '')); }
+  try { const x = await ai('Return ONLY JSON {"ok":true,"dish":"name one healthy Tamil Nadu breakfast"}'); setStatus('aiStatus', '✓ AI is working' + (x.__source === 'device' ? ' on this phone' : x.__source === 'cloud' ? ' (Google Gemini)' : '') + '. ' + (x.dish ? 'Sample answer: ' + x.dish : '')); }
   catch (e) { setStatus('aiStatus', errMsg(e), 'err'); } });
 
 /* ----- reminders ----- */
@@ -666,27 +710,27 @@ $('redoOnb').addEventListener('click', openOnb);
 
 /* ================= ONBOARDING ================= */
 let onbStep = 0, onbDraft = null;
-const ONB = ['welcome', ...SECTIONS.map(s => s.id), 'connect', 'done'];
+const ONB = ['welcome', 'login', ...SECTIONS.map(s => s.id), 'connect', 'done'];
 function openOnb() { onbDraft = structuredClone(S.profile); onbStep = 0; stopCam(); $('onb').hidden = false; renderOnb(); }
 function renderOnb() {
   const id = ONB[onbStep], body = $('onbBody');
   $('onbDots').innerHTML = ONB.map((_, i) => `<i class="${i <= onbStep ? 'on' : ''}"></i>`).join('');
   $('onbBack').style.visibility = onbStep ? 'visible' : 'hidden';
-  $('onbNext').textContent = id === 'welcome' ? 'Get started' : id === 'done' ? 'Start using Care Me' : 'Next';
+  $('onbNext').textContent = id === 'welcome' ? 'Get started' : id === 'done' ? 'Start using Care Me' : id === 'login' && !S.user && isNative() ? 'Skip for now' : 'Next';
   $('onbSkip').hidden = id === 'welcome' || id === 'done';
   if (id === 'welcome') body.innerHTML = `<div class="welcome"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="var(--tur)"/><circle cx="60" cy="62" r="38" fill="#fff" stroke="#e1d6be" stroke-width="3"/><circle cx="47" cy="52" r="10" fill="var(--tur)"/><circle cx="73" cy="51" r="9" fill="var(--chili)"/><circle cx="58" cy="75" r="9" fill="#78aa3c"/><path d="M60 30c6-8 16-8 18 0-6 6-12 5-18 0z" fill="#1e8e3e"/></svg>
     <h2>Welcome to Care Me</h2><p class="meta">Your personal diet companion for Indian and international food.</p>
     <ul><li>📸 Photo → calories for every dish</li><li>🎯 Targets built for your goal and health</li><li>🥗 Personal diet plans in your home cuisine</li><li>⌚ Works with your smartwatch and scale</li><li>📈 Weight, sugar and BP tracking</li></ul><p class="meta">Setup takes about 2 minutes.</p></div>`;
-  else if (id === 'connect') body.innerHTML = `<h2>Connect</h2><p class="meta secSub">Both optional — you can do this later in Profile.</p>
-    <div class="card form"><h2>AI engine</h2><p class="meta">Needed to recognise food from photos. Get a free key from <b>aistudio.google.com/apikey</b> and paste it below.</p>
-     <label>Provider<select id="oProv"><option value="gemini">Google Gemini (free tier)</option><option value="claude">Anthropic Claude</option></select></label>
-     <label>API key<input id="oKey" type="password" autocomplete="off" value="${esc(S.ai.key)}"></label></div>
-    <div class="card"><h2>Fitness device</h2><p class="meta">Link your watch, band or smart scale through Health Connect.</p><div class="row"><button class="alt grow" id="oLink">${S.hc.linked ? '✓ Linked' : 'Link now'}</button></div></div>`;
+  else if (id === 'login') body.innerHTML = `<h2>Sign in</h2><p class="meta secSub">Use your Google account to switch on photo analysis, diet plans and food checks. No API key, no payment.</p>
+    <div class="card">${S.user ? `<div class="acct">${S.user.photo ? `<img src="${esc(S.user.photo)}" alt="">` : `<span class="av">${esc((S.user.name || '?')[0])}</span>`}<div><b>✓ Signed in</b><div class="meta">${esc(S.user.email)}</div></div></div>` : googleBtn('oSignIn')}
+     <p class="meta" style="margin-top:12px">On phones with built-in AI (Gemini Nano), food checks run privately on the phone. Other phones use Google Gemini in the cloud. Your diary, weight and health details stay on this phone.</p></div>
+    ${isNative() ? '' : '<p class="meta">Web preview: sign-in is only in the Android app — tap Next to continue.</p>'}`;
+  else if (id === 'connect') body.innerHTML = `<h2>Connect a device</h2><p class="meta secSub">Optional — you can do this later in Profile.</p>
+    <div class="card"><h2>Fitness device</h2><p class="meta">Link your watch, band, smart scale, BP monitor or glucometer through Health Connect.</p><div class="row"><button class="alt grow" id="oLink">${S.hc.linked ? '✓ Linked' : 'Link now'}</button></div></div>`;
   else if (id === 'done') body.innerHTML = `<h2>You're all set${onbDraft.name ? ', ' + esc(onbDraft.name.split(' ')[0]) : ''}!</h2><div class="card">${targetsHTML(onbDraft)}</div>
     <p class="meta disclaimer">Care Me gives general guidance and is not a medical device. Always follow your doctor's or dietitian's advice.</p>`;
   else { const sec = SECTIONS.find(s => s.id === id); body.innerHTML = `<div class="form" data-sec="${id}">${sectionHTML(sec, onbDraft)}</div>`;
     if (id === 'health') body.insertAdjacentHTML('beforeend', `<p class="meta disclaimer">Your health details stay on this phone. Care Me adjusts general limits; it doesn't replace your doctor's diet chart.</p>`); }
-  $('oProv') && ($('oProv').value = S.ai.prov);
   body.scrollTop = 0;
 }
 bindForm($('onbBody'), new Proxy({}, { get: (_, k) => onbDraft?.[k], set: (_, k, v) => (onbDraft[k] = v, true) }), rerender => {
@@ -696,7 +740,6 @@ $('onbBody').addEventListener('click', e => { if (e.target.id === 'oLink') linkH
 function onbMove(d) {
   const id = ONB[onbStep];
   if (d > 0 && id === 'basics' && !validBasics(onbDraft)) return;
-  if (id === 'connect') { const k = $('oKey')?.value.trim(); S.ai.prov = $('oProv').value; if (k != null) S.ai.key = k; save(); }
   if (d > 0 && id === 'done') { S.profile = structuredClone(onbDraft); S.onboarded = true; if (!S.weights.length) addWeight(today(), S.profile.w, 'manual'); save(); $('onb').hidden = true; go('today'); return; }
   onbStep = Math.max(0, Math.min(ONB.length - 1, onbStep + d)); renderOnb();
 }
@@ -707,5 +750,6 @@ $('onbSkip').addEventListener('click', () => { onbStep = ONB.length - 1; renderO
 /* ================= START ================= */
 go('today');
 if (!S.onboarded) openOnb();
+syncUser(); refreshAIState();
 window.addEventListener('offline', () => toast('You are offline — photo analysis needs internet'));
 }
